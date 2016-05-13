@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for mercadolibre-scraping-spider project
+# Scrapy settings for mercadolibre_scraping_spider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'mercadolibre-scraping-spider'
+BOT_NAME = 'mercadolibre_scraping_spider'
 
-SPIDER_MODULES = ['mercadolibre-scraping-spider.spiders']
-NEWSPIDER_MODULE = 'mercadolibre-scraping-spider.spiders'
+SPIDER_MODULES = ['mercadolibre_scraping_spider.spiders']
+NEWSPIDER_MODULE = 'mercadolibre_scraping_spider.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'mercadolibre-scraping-spider (+http://www.yourdomain.com)'
+#USER_AGENT = 'mercadolibre_scraping_spider (+http://www.yourdomain.com)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS=32
@@ -44,13 +44,13 @@ NEWSPIDER_MODULE = 'mercadolibre-scraping-spider.spiders'
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'mercadolibre-scraping-spider.middlewares.MyCustomSpiderMiddleware': 543,
+#    'mercadolibre_scraping_spider.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'mercadolibre-scraping-spider.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'mercadolibre_scraping_spider.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -62,7 +62,7 @@ NEWSPIDER_MODULE = 'mercadolibre-scraping-spider.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'mercadolibre-scraping-spider.pipelines.MercadolibreScrapingPipeline': 300,
+    'mercadolibre_scraping_spider.pipelines.MercadolibreScrapingPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

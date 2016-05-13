@@ -16,7 +16,7 @@ class MercadolibreScrapingPipeline(object):
         self.logger.debug("Executing the pipelines...")
 
         if (type(item) is CategoriaItem):
-            self.logger.debug("Scrapped pipelined item: " + item)
+            self.logger.debug("Scraped pipelined item: " + item)
         else:
             self.logger.debug("Unknown type")
         return item
