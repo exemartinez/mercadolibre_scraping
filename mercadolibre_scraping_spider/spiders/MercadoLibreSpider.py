@@ -19,9 +19,11 @@ class MercadoLibreSpider(scrapy.Spider):
         categorias = div.css("a")
         self.logger.info('Getting the categories data...')
 
-        self.saveCategorias(categorias)
+        result = self.saveCategorias(categorias)
 
         self.logger.info('...categories data saved.')
+
+        return result
         #Then we go for a given category and extract its products.
 
     #Saving a given category and taking the due business action.
@@ -37,4 +39,4 @@ class MercadoLibreSpider(scrapy.Spider):
 
             self.logger.debug('Saving category:' + str(cateItem["nombre"]).encode("utf-8"))
 
-            #yield cateItem
+            yield cateItem

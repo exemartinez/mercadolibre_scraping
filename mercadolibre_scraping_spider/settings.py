@@ -62,7 +62,7 @@ NEWSPIDER_MODULE = 'mercadolibre_scraping_spider.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'mercadolibre_scraping_spider.pipelines.MercadolibreScrapingPipeline': 300,
+    "mercadolibre_scraping_spider.pipelines.MercadolibreScrapingPipeline": 100,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

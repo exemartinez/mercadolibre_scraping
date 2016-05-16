@@ -5,10 +5,10 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+from scrapy.item import Item, Field
 
 #Gets all the data related to the products categories available in MercadoLibre
-class CategoriaItem(scrapy.Item):
+class CategoriaItem(Item):
 
-    nombre = scrapy.Field()
-    linkCategoria = scrapy.Field()
+    nombre = Field()
+    linkCategoria = Field()
