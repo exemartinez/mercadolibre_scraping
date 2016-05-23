@@ -1,10 +1,17 @@
 import logging
 import scrapy
-from mercadolibre_scraping_spider.items import CategoriaItem
+import pdb
+from mercadolibre_scraping_spider.items import CategoriaItem, SubCategoriaItem
+from mercadolibre_scraping_spider.dao import DAO
 
-class MercadoLibreSpider(scrapy.Spider):
-    name = "MercadoLibreSpider"
-    allowed_domains = ["http://www.mercadolibre.com.ar/"]
+class ML_Categorias_Spider(scrapy.Spider):
+    '''
+    This class scraps Mercadolibre.com.ar for products categories.
+    '''
+
+    name = "ML_Categorias_Spider"
+    allowed_domains = ["http://www.mercadolibre.com.ar/",
+                       "http://home.mercadolibre.com.ar/"]
     start_urls = [
         "http://www.mercadolibre.com.ar/"
     ]
@@ -24,9 +31,10 @@ class MercadoLibreSpider(scrapy.Spider):
         self.logger.info('...categories data saved.')
 
         return result
-        #Then we go for a given category and extract its products.
 
-    #Saving a given category and taking the due business action.
+    '''
+    Saving a given category and taking the due business action.
+    '''
     def saveCategorias(self, categorias):
 
         self.logger.debug('Saving categories...')
@@ -34,9 +42,75 @@ class MercadoLibreSpider(scrapy.Spider):
         for categoria in categorias:
             cateItem = CategoriaItem()
 
-            cateItem["linkCategoria"] = categoria.xpath(".//@href").extract()
-            cateItem["nombre"] = categoria.xpath(".//text()").extract()
+            cateItem["linkCategoria"] = str(categoria.xpath(".//@href").extract()).encode('utf-8')
+            cateItem["nombre"] = str(categoria.xpath(".//text()").extract()).encode('utf-8')
 
-            self.logger.debug('Saving category:' + str(cateItem["nombre"]).encode("utf-8"))
+            self.logger.debug('Saving category: ' + cateItem["nombre"])
 
             yield cateItem
+
+class ML_SubCategorias_Spider(scrapy.Spider):
+    '''
+    This class scraps Mercadolibre.com.ar for products SUB categories.
+    '''
+    CONST_ML_SUBCAT_URL = 1
+    name = "ML_SubCategorias_Spider"
+    allowed_domains = ["http://www.mercadolibre.com.ar/",
+                       "http://home.mercadolibre.com.ar/"]
+    start_urls = [
+        "http://www.mercadolibre.com.ar/"
+    ]
+
+    logger = logging.getLogger()
+
+    #Parsing the MercadoLibre Site
+    def parse(self, response):
+        #pdb.set_trace()
+        #Gets the categories to the pages (urls) to get into...
+        daoinstance = DAO()
+        next_url=None
+
+        daoinstance.open_connection()
+        results = daoinstance.exec_get_all_categoria()
+        daoinstance.close_connection()
+
+        self.logger.debug('Categories returned: ' + str(len(results)))
+
+        #iterates the subcategories...
+        for item in results:
+            next_url = str(item[self.CONST_ML_SUBCAT_URL]).encode("utf-8")
+            self.logger.debug('Processing the category link: %s', next_url)
+
+            #starts redirecting to the die HTTP-str-subcategories
+            #if (next_url.startswith("http:")): #avoids any wrong scraped url string
+            self.logger.debug('Redirecting to the next URL for processing')
+            #pdb.set_trace()
+            request = scrapy.Request(next_url, callback=self.parse_subCategorias, dont_filter=True)
+            request.meta["id_cat"] = item[0]
+
+            yield request
+
+        self.logger.debug('Parsing subcategories - DONE')
+
+
+    def parse_subCategorias(self, response):
+        '''
+        We take the subcategories
+        '''
+        self.logger.debug("Visited %s", response.url)
+
+        id_cat = response.meta["id_cat"]
+        lista = response.xpath("//body/div[@class='container']/div[@class='nav']")
+
+        for subcater in lista.xpath("./div/ul/li/a"):
+
+            subcat = SubCategoriaItem()
+
+            subcat["nombre"] = str(subcater.xpath("./text()").extract()).encode('utf-8')
+            subcat["linkCategoria"] = str(subcater.xpath("./@href").extract()).encode('utf-8')
+            subcat["ml_categorias_id_fk"] = id_cat
+
+            self.logger.debug('Subcategorie url: ' + subcat["linkCategoria"])
+            self.logger.debug('Subcategorie nombre: ' + subcat["nombre"])
+
+            yield subcat

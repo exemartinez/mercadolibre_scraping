@@ -12,3 +12,12 @@ class CategoriaItem(Item):
 
     nombre = Field()
     linkCategoria = Field()
+
+'''
+This defines the SUB-CATEGORIES of items
+'''
+class SubCategoriaItem(Item):
+
+    nombre = Field()
+    linkCategoria = Field()
+    ml_categorias_id_fk = Field()
