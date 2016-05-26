@@ -5,6 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import logging
+import locale
 from mercadolibre_scraping_spider.items import CategoriaItem, SubCategoriaItem
 from mercadolibre_scraping_spider.dao import DAO
 from scrapy.exceptions import DropItem
@@ -34,16 +35,16 @@ class MercadolibreScrapingPipeline(object):
             self.daoinst.open_connection()
 
             #preparing the parameters...
-            nombre_cat = str(item['nombre']).encode("utf-8")
-            link_cat = str(item['linkCategoria']).encode("utf-8")
+            #nombre_cat = str(item['nombre']).encode("utf-8")
+            #link_cat = str(item['linkCategoria']).encode("utf-8")
 
-            result = self.daoinst.exec_get_categoria_exists_byLink(link_cat)
-
+            result = self.daoinst.exec_get_categoria_exists_byLink(item['linkCategoria'])
+            #import pdb; pdb.set_trace()
             if result:
-                self.logger.debug("Categoria already in database: " + nombre_cat)
+                self.logger.debug("Categoria already in database: " + item['nombre'])
             else:
-                self.daoinst.exec_new_single_categoria(link_cat, nombre_cat)
-                self.logger.debug("Succesfully stored pipelined Categoria: " + nombre_cat)
+                self.daoinst.exec_new_single_categoria(item['linkCategoria'], item['nombre'])
+                self.logger.debug("Succesfully stored pipelined Categoria: " + item['nombre'])
 
             self.daoinst.close_connection()
 
@@ -51,13 +52,13 @@ class MercadolibreScrapingPipeline(object):
             #Starting to store the SUB categories data from MercadoLibre.
             self.daoinst.open_connection()
 
-            result = self.daoinst.exec_get_sub_categoria_exists_byLink(item['linkCategoria'][0])
+            result = self.daoinst.exec_get_sub_categoria_exists_byLink(item['linkCategoria'])
 
             if result:
                 self.logger.debug("SubCategoria already in database: " + str(item['nombre']).encode("utf-8"))
             else:
-                self.daoinst.exec_new_single_sub_categoria(item['linkCategoria'][0], item['nombre'][0], item['ml_categorias_id_fk'][0] )
-                self.logger.debug("Succesfully stored pipelined SubCategoria: " + str(item['nombre']).encode("utf-8"))
+                self.daoinst.exec_new_single_sub_categoria(item['linkCategoria'], item['nombre'], item['ml_categorias_id_fk'])
+                self.logger.debug("Succesfully stored pipelined SubCategoria: " + item['nombre'])
 
             self.daoinst.close_connection()
         else:

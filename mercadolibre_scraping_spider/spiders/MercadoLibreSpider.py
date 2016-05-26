@@ -1,4 +1,5 @@
 import logging
+import locale
 import scrapy
 import pdb
 from mercadolibre_scraping_spider.items import CategoriaItem, SubCategoriaItem
@@ -70,6 +71,7 @@ class ML_SubCategorias_Spider(scrapy.Spider):
         daoinstance = DAO()
         next_url=None
 
+        #extracts the data from the database.
         daoinstance.open_connection()
         results = daoinstance.exec_get_all_categoria()
         daoinstance.close_connection()
@@ -78,17 +80,18 @@ class ML_SubCategorias_Spider(scrapy.Spider):
 
         #iterates the subcategories...
         for item in results:
-            next_url = str(item[self.CONST_ML_SUBCAT_URL]).encode("utf-8")
+            next_url = self.fix_unicode(item[self.CONST_ML_SUBCAT_URL])
             self.logger.debug('Processing the category link: %s', next_url)
 
             #starts redirecting to the die HTTP-str-subcategories
-            #if (next_url.startswith("http:")): #avoids any wrong scraped url string
-            self.logger.debug('Redirecting to the next URL for processing')
-            #pdb.set_trace()
-            request = scrapy.Request(next_url, callback=self.parse_subCategorias, dont_filter=True)
-            request.meta["id_cat"] = item[0]
 
-            yield request
+            if (next_url.startswith("http:")): #avoids any wrong scraped url string
+
+                request = scrapy.Request(next_url, callback=self.parse_subCategorias, dont_filter=True)
+                request.meta["id_cat"] = item[0]
+                self.logger.debug('Redirecting to the next URL for processing')
+
+                yield request
 
         self.logger.debug('Parsing subcategories - DONE')
 
@@ -114,3 +117,12 @@ class ML_SubCategorias_Spider(scrapy.Spider):
             self.logger.debug('Subcategorie nombre: ' + subcat["nombre"])
 
             yield subcat
+
+    def fix_unicode(self, uString):
+        '''
+        This resolves the error of URL stored with "[u'" and "']'" at the end of the string.
+        '''
+        #TODO: I need to replace this, for the proper way to transform UNICODE to another character encoding; one that works with the current database.
+        
+        language, output_encoding = locale.getdefaultlocale()
+        return uString.encode(output_encoding)[3:-2]

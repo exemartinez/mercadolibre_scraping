@@ -1,4 +1,5 @@
 import logging
+import locale
 from pysqlite2 import dbapi2 as sqlite
 
 class DAO (object):
@@ -9,6 +10,7 @@ class DAO (object):
         '''
         Creates a new Categoria in the database.
         '''
+
         self.cursor.execute("insert into ml_sub_categorias (linkCategoria, nombre, ml_categorias_id_fk) values (?, ?, ?)", (linkCategoria, nombre, ml_categorias_id_fk,))
         self.connection.commit()
 
@@ -16,6 +18,7 @@ class DAO (object):
         '''
         Creates a new Categoria in the database.
         '''
+
         self.cursor.execute("insert into ml_categorias (linkCategoria, nombre) values (?, ?)", (linkCategoria, nombre,))
         self.connection.commit()
 
@@ -30,13 +33,10 @@ class DAO (object):
         '''
         Returns one, single categoria by its URL
         '''
-        self.logger.debug("Trying to assess if the new category exists in ml_categorias...")
-
         self.cursor.execute("select * from ml_categorias where linkCategoria=?", (linkCategoria,))
-
         result = self.cursor.fetchone()
-        self.logger.debug("RESULT: " + str(result))
 
+        self.logger.debug("search ---- " + str(result))
         return result
 
     def exec_get_all_categoria(self):
